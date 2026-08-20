@@ -1,0 +1,25 @@
+name: Mirror Approved Upstream Images
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/mirror-approved-upstream-images.yml'
+      - 'Dockerfile'
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/mirror-approved-upstream-images.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  node-20-alpine:
+    uses: skunkworks-academy/academy-validation/.github/workflows/reusable-ghcr-mirror-approved-image.yml@main
+    with:
+      source_key: node-20-alpine
+      target_tag: base-node-20-alpine
+    secrets: inherit
