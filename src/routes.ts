@@ -13,6 +13,9 @@ import {
 
 export const routes = Router();
 
+const routeParam = (value: string | string[]): string =>
+  Array.isArray(value) ? value[0] ?? "" : value;
+
 const routeList = [
   "GET /api/health",
   "GET /api/jobs",
@@ -70,13 +73,13 @@ routes.get(["/classes", "/api/classes"], (_req, res) => {
 });
 
 routes.post(["/classes/:id/register", "/api/classes/:id/register"], authenticate, requireScope(), (req, res) => {
-  const registration = store.registerClass(req.params.id, req.user!);
+  const registration = store.registerClass(routeParam(req.params.id), req.user!);
   if (!registration) return res.status(404).json({ error: "class_not_found" });
   return res.status(201).json(registration);
 });
 
 routes.post(["/classes/:id/assign-instructor", "/api/classes/:id/assign-instructor"], authenticate, requireScope(), (req, res) => {
-  const classItem = store.assignInstructor(req.params.id, req.user!);
+  const classItem = store.assignInstructor(routeParam(req.params.id), req.user!);
   if (!classItem) return res.status(404).json({ error: "class_not_found" });
   return res.json(classItem);
 });
@@ -126,7 +129,7 @@ routes.post(["/admin/jobs", "/api/admin/jobs"], authenticate, requireStaff, (req
 
 routes.patch(["/admin/jobs/:id", "/api/admin/jobs/:id"], authenticate, requireStaff, (req, res) => {
   const input = jobInputSchema.partial().parse(req.body);
-  const job = store.updateJob(req.params.id, input);
+  const job = store.updateJob(routeParam(req.params.id), input);
   if (!job) return res.status(404).json({ error: "job_not_found" });
   return res.json(job);
 });
@@ -138,7 +141,7 @@ routes.post(["/admin/classes", "/api/admin/classes"], authenticate, requireStaff
 
 routes.patch(["/admin/classes/:id", "/api/admin/classes/:id"], authenticate, requireStaff, (req, res) => {
   const input = classInputSchema.partial().parse(req.body);
-  const classItem = store.updateClass(req.params.id, input);
+  const classItem = store.updateClass(routeParam(req.params.id), input);
   if (!classItem) return res.status(404).json({ error: "class_not_found" });
   return res.json(classItem);
 });
@@ -149,7 +152,7 @@ routes.get(["/admin/applications", "/api/admin/applications"], authenticate, req
 
 routes.patch(["/admin/applications/:id", "/api/admin/applications/:id"], authenticate, requireStaff, (req, res) => {
   const input = applicationPatchSchema.parse(req.body);
-  const application = store.updateApplication(req.params.id, input);
+  const application = store.updateApplication(routeParam(req.params.id), input);
   if (!application) return res.status(404).json({ error: "application_not_found" });
   return res.json(application);
 });
@@ -160,7 +163,7 @@ routes.get(["/admin/tasks", "/api/admin/tasks"], authenticate, requireStaff, (_r
 
 routes.patch(["/admin/tasks/:id", "/api/admin/tasks/:id"], authenticate, requireStaff, (req, res) => {
   const input = taskPatchSchema.parse(req.body);
-  const task = store.updateTask(req.params.id, input);
+  const task = store.updateTask(routeParam(req.params.id), input);
   if (!task) return res.status(404).json({ error: "task_not_found" });
   return res.json(task);
 });
